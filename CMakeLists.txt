@@ -33,7 +33,10 @@ if(CLANG_TIDY_EXE)
   set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}")
 endif()
 
-add_library(itpld_core STATIC src/itpld.c)
+add_library(itpld_core STATIC
+  src/itpld.c
+  src/common/diagnostics.c
+  src/common/file.c)
 
 target_include_directories(
   itpld_core
