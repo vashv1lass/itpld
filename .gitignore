@@ -1,1 +1,8 @@
-# No files here atp
+# IDE settings
+compile_commands.json
+
+# Build folders & cache
+.cache/
+build/
+build-release/
+

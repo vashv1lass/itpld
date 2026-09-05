@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.c' '*.h')
+if [ -z "$FILES" ]; then
+	exit 0
+fi
+
+echo "Running clang-format check... (pre-commit hook)"
+
+clang-format --dry-run --Werror $FILES
+
+if [ $? -ne 0 ]; then
+	echo "ERROR: clang-format check failed!"
+	exit 1
+fi
+
+exit 0
