@@ -12,80 +12,81 @@
 void
 itpld_filebuf_init(itpld_file_buffer_t * buf)
 {
-	if (buf != NULL) {
-		buf->data = NULL;
-		buf->size = 0;
-	}
+	if (buf == NULL) return;
+
+	buf->data = NULL;
+	buf->size = 0;
 }
 
 void
 itpld_filebuf_destroy(itpld_file_buffer_t * buf)
 {
-	if (buf != NULL) {
-		free(buf->data);
-		buf->data = NULL;
+	if (buf == NULL) return;
 
-		buf->size = 0;
-	}
+	free(buf->data);
+	buf->data = NULL;
+
+	buf->size = 0;
 }
 
 itpld_status_t
 itpld_file_read(char const * restrict path, itpld_file_buffer_t * restrict outbuf)
 {
-	itpld_filebuf_destroy(outbuf);
-	itpld_filebuf_init(outbuf);
-
-	if (outbuf == NULL || path == NULL) {
-		return ITPLD_STATUS_INVAL_ARG;
-	}
+	if (outbuf == NULL || path == NULL) return ITPLD_STATUS_INVAL_ARG;
 
 	FILE * fd = fopen(path, "rb");
-	if (fd == NULL) {
-		return ITPLD_STATUS_IO_ERROR;
-	}
+	if (fd == NULL) return ITPLD_STATUS_IO_ERROR;
+
+	itpld_status_t stat = ITPLD_STATUS_OK;
 
 	if (fseek(fd, 0L, SEEK_END) != 0) {
-		ITPLD_RETVAL_UNUSED(fclose(fd));
-		return ITPLD_STATUS_IO_ERROR;
+		stat = ITPLD_STATUS_IO_ERROR;
+		goto mrproper;
 	}
 	long offset = ftell(fd);
 	if (offset < 0) {
-		ITPLD_RETVAL_UNUSED(fclose(fd));
-		return ITPLD_STATUS_IO_ERROR;
+		stat = ITPLD_STATUS_IO_ERROR;
+		goto mrproper;
 	}
 	if (fseek(fd, 0L, SEEK_SET) != 0) {
-		ITPLD_RETVAL_UNUSED(fclose(fd));
-		return ITPLD_STATUS_IO_ERROR;
+		stat = ITPLD_STATUS_IO_ERROR;
+		goto mrproper;
 	}
 
+	size_t	      bufsz = 0;
+	itpld_uchar * buf   = NULL;
 	if (offset != 0) {
 #if LONG_MAX > SIZE_MAX
 		if (offset > SIZE_MAX) {
-			ITPLD_RETVAL_UNUSED(fclose(fd));
-			return ITPLD_STATUS_OVERFLOW;
+			stat = ITPLD_STATUS_OVERFLOW;
+			goto mrproper;
 		}
 #endif
-		size_t	      bufsz = (size_t)offset;
-		itpld_uchar * buf   = (itpld_uchar *)calloc(bufsz, sizeof(itpld_uchar));
+		bufsz = (size_t)offset;
+		buf   = malloc(bufsz * sizeof(*buf));
 		if (buf == NULL) {
-			ITPLD_RETVAL_UNUSED(fclose(fd));
-			return ITPLD_STATUS_OUT_OF_MEM;
+			stat = ITPLD_STATUS_OUT_OF_MEM;
+			goto mrproper;
 		}
 
-		if (fread((void *)buf, sizeof(itpld_uchar), bufsz, fd) != bufsz) {
+		if (fread(buf, sizeof(itpld_uchar), bufsz, fd) != bufsz) {
 			free(buf);
-			ITPLD_RETVAL_UNUSED(fclose(fd));
-			return ITPLD_STATUS_IO_ERROR;
+			stat = ITPLD_STATUS_IO_ERROR;
+			goto mrproper;
 		}
-
-		outbuf->data = buf;
-		outbuf->size = bufsz;
 	}
 
 	if (fclose(fd) != 0) {
-		itpld_filebuf_destroy(outbuf);
+		free(buf);
 		return ITPLD_STATUS_IO_ERROR;
 	}
 
-	return ITPLD_STATUS_OK;
+	itpld_filebuf_destroy(outbuf);
+	outbuf->data = buf;
+	outbuf->size = bufsz;
+
+	return stat;
+mrproper:
+	ITPLD_RETVAL_IGNORED(fclose(fd));
+	return stat;
 }

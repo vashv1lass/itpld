@@ -31,7 +31,6 @@ itpld_status_str(itpld_status_t stat)
 void
 itpld_error_report(FILE * restrict stream, itpld_status_t stat, char const * restrict ctx, char const * restrict msg)
 {
-	if (stream != NULL && ctx != NULL && msg != NULL) {
-		ITPLD_RETVAL_UNUSED(fprintf(stream, "itpld error: %s: %s: %s\n", ctx, itpld_status_str(stat), msg));
-	}
+	if (stream != NULL && ctx != NULL && msg != NULL)
+		ITPLD_RETVAL_IGNORED(fprintf(stream, "itpld error: %s: %s: %s\n", ctx, itpld_status_str(stat), msg));
 }

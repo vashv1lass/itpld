@@ -1,5 +1,5 @@
-#ifndef ITPLD_STATUS_H_
-#define ITPLD_STATUS_H_
+#ifndef ITPLD_COMMON_STATUS_H_
+#define ITPLD_COMMON_STATUS_H_
 
 typedef enum itpld_status {
 	ITPLD_STATUS_OK,
@@ -11,4 +11,4 @@ typedef enum itpld_status {
 	ITPLD_STATUS_OVERFLOW
 } itpld_status_t;
 
-#endif /* ITPLD_STATUS_H_ */
+#endif /* ITPLD_COMMON_STATUS_H_ */

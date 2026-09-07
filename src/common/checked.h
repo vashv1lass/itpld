@@ -1,5 +1,5 @@
-#ifndef ITPLD_CHECKED_H_
-#define ITPLD_CHECKED_H_
+#ifndef ITPLD_COMMON_CHECKED_H_
+#define ITPLD_COMMON_CHECKED_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -11,26 +11,24 @@ itpld_in_range(size_t offset, size_t sz, size_t bufsz)
 	return (bool)(offset <= bufsz && sz <= bufsz - offset);
 }
 
+/* returns true on success and false if res == NULL or arithmetic overflows */
 static inline bool
 itpld_size_add(size_t x, size_t y, size_t * res)
 {
-	if (res == NULL) {
-		return false;
-	}
+	if (res == NULL || y > SIZE_MAX - x) return false;
 
 	*res = x + y;
-	return *res >= x;
+	return true;
 }
 
+/* returns true on success and false if res == NULL or arithmetic overflows */
 static inline bool
 itpld_size_mul(size_t x, size_t y, size_t * res)
 {
-	if (res == NULL) {
-		return false;
-	}
+	if (res == NULL || (x != 0 && y > SIZE_MAX / x)) return false;
 
 	*res = x * y;
-	return (bool)(x == 0 || y <= SIZE_MAX / x);
+	return true;
 }
 
-#endif /* ITPLD_CHECKED_H_ */
+#endif /* ITPLD_COMMON_CHECKED_H_ */
