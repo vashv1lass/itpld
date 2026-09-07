@@ -51,7 +51,7 @@ AlignConsecutiveMacros: Consecutive
 AlignArrayOfStructures: Left
 AlignTrailingComments: true
 
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: BlockIndent
 BinPackArguments: false
 BinPackParameters: false
 

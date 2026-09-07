@@ -16,8 +16,8 @@ and performs the relocation, nothing more.
 
 ## How to build the linker
 
-ITPLD linker uses the LLVM stack, so make sure that clang and lld are installed
-on your system.
+ITPLD linker uses the LLVM stack, so make sure that clang lld and clang-tidy
+are installed on your system.
 
 Building (Release version, without unit tests):
 
@@ -44,3 +44,8 @@ git config core.hooksPath scripts/hooks
 
 Testing the ITPLD is performed without using any frameworks, such as GoogleTest.
 Only libc `assert()`.
+
+### Current status
+
+Foundation infrastructure is implemented;
+ELF parsing and linking are not implemented yet.

@@ -3,6 +3,6 @@ compile_commands.json
 
 # Build folders & cache
 .cache/
-build/
+build-debug/
 build-release/
 
