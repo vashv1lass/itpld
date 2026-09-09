@@ -14,6 +14,8 @@
 // sync the test registry with the test list in tests/CMakeLists.txt
 itpld_test_registry_entry_t const ITPLD_TEST_REGISTRY[] = {
 	{ .name = "in_range",	      .func = itpld_in_range_test	  },
+	{ .name = "int_size_cast",   .func = itpld_int_size_cast_test   },
+	{ .name = "long_size_cast",  .func = itpld_long_size_cast_test  },
 	{ .name = "size_add",	      .func = itpld_size_add_test	  },
 	{ .name = "size_mul",	      .func = itpld_size_mul_test	  },
 	{ .name = "filebuf_init",	  .func = itpld_filebuf_init_test	  },

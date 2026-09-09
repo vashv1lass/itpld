@@ -5,6 +5,12 @@ void
 itpld_in_range_test(void);
 
 void
+itpld_int_size_cast_test(void);
+
+void
+itpld_long_size_cast_test(void);
+
+void
 itpld_size_add_test(void);
 
 void

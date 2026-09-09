@@ -36,7 +36,8 @@ endif()
 add_library(itpld_core STATIC
   src/itpld.c
   src/common/diagnostics.c
-  src/common/file.c)
+  src/common/file.c
+  src/cli/options.c)
 
 target_include_directories(
   itpld_core

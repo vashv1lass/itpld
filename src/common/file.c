@@ -1,5 +1,6 @@
 #include "common/file.h"
 
+#include "common/checked.h"
 #include "common/compiler.h"
 #include "common/status.h"
 #include "common/types.h"
@@ -37,6 +38,9 @@ itpld_file_read(char const * restrict path, itpld_file_buffer_t * restrict outbu
 	FILE * fd = fopen(path, "rb");
 	if (fd == NULL) return ITPLD_STATUS_IO_ERROR;
 
+	itpld_file_buffer_t buf;
+	itpld_filebuf_init(&buf);
+
 	itpld_status_t stat = ITPLD_STATUS_OK;
 
 	if (fseek(fd, 0L, SEEK_END) != 0) {
@@ -53,40 +57,42 @@ itpld_file_read(char const * restrict path, itpld_file_buffer_t * restrict outbu
 		goto mrproper;
 	}
 
-	size_t	      bufsz = 0;
-	itpld_uchar * buf   = NULL;
 	if (offset != 0) {
-#if LONG_MAX > SIZE_MAX
-		if (offset > SIZE_MAX) {
+		if (!itpld_long_size_cast(offset, &buf.size)) {
 			stat = ITPLD_STATUS_OVERFLOW;
 			goto mrproper;
 		}
-#endif
-		bufsz = (size_t)offset;
-		buf   = malloc(bufsz * sizeof(*buf));
-		if (buf == NULL) {
+		size_t bufsz_bytes;
+		if (!itpld_size_mul(buf.size, sizeof(*buf.data), &bufsz_bytes)) {
+			stat = ITPLD_STATUS_OVERFLOW;
+			goto mrproper;
+		}
+
+		buf.data = malloc(bufsz_bytes);
+		if (buf.data == NULL) {
 			stat = ITPLD_STATUS_OUT_OF_MEM;
 			goto mrproper;
 		}
 
-		if (fread(buf, sizeof(itpld_uchar), bufsz, fd) != bufsz) {
-			free(buf);
+		if (fread(buf.data, sizeof(itpld_uchar), buf.size, fd) != buf.size) {
 			stat = ITPLD_STATUS_IO_ERROR;
 			goto mrproper;
 		}
 	}
 
 	if (fclose(fd) != 0) {
-		free(buf);
-		return ITPLD_STATUS_IO_ERROR;
+		fd   = NULL;
+		stat = ITPLD_STATUS_IO_ERROR;
+		goto mrproper;
 	}
+	fd = NULL;
 
 	itpld_filebuf_destroy(outbuf);
-	outbuf->data = buf;
-	outbuf->size = bufsz;
 
+	*outbuf = buf;
 	return stat;
 mrproper:
-	ITPLD_RETVAL_IGNORED(fclose(fd));
+	itpld_filebuf_destroy(&buf);
+	if (fd != NULL) ITPLD_RETVAL_IGNORED(fclose(fd));
 	return stat;
 }

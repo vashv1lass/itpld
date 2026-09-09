@@ -17,6 +17,8 @@ target_link_libraries(itpld_test PRIVATE itpld_core project_options)
 # sync the test list with the test registry in testconf.c
 set(ALL_TESTS
   in_range
+  int_size_cast
+  long_size_cast
   size_add
   size_mul
   filebuf_init

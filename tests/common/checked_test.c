@@ -3,6 +3,7 @@
 #include "common/checked.h"
 
 #include <assert.h>
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -39,6 +40,92 @@ itpld_in_range_test(void)
 	itpld_in_range_test_true();
 	itpld_in_range_test_false();
 	itpld_in_range_test_overflow();
+}
+
+static void
+itpld_int_size_cast_test_ok(void)
+{
+#if INT_MAX > SIZE_MAX
+	int    x0 = SIZE_MAX + 1;
+	size_t x0sz;
+	assert(itpld_int_size_cast(x0, &x0sz));
+	assert(x0 == x0sz);
+#endif
+	int    x1 = 176;
+	size_t x1sz;
+	assert(itpld_int_size_cast(x1, &x1sz));
+	assert((int)x1 == (int)x1sz);
+}
+
+static void
+itpld_int_size_cast_test_bad(void)
+{
+#if INT_MAX > SIZE_MAX
+	int    x0 = INT_MAX;
+	size_t x0sz;
+	assert(!itpld_int_size_cast(x0, &x0sz));
+#endif
+	int    x1 = -1;
+	size_t x1sz;
+	assert(!itpld_int_size_cast(x1, &x1sz));
+}
+
+static void
+itpld_int_size_cast_test_null_guards(void)
+{
+	int x = 0;
+	assert(!itpld_int_size_cast(x, NULL));
+}
+
+void
+itpld_int_size_cast_test(void)
+{
+	itpld_int_size_cast_test_ok();
+	itpld_int_size_cast_test_bad();
+	itpld_int_size_cast_test_null_guards();
+}
+
+static void
+itpld_long_size_cast_test_ok(void)
+{
+#if LONG_MAX > SIZE_MAX
+	long   x0 = SIZE_MAX + 1;
+	size_t x0sz;
+	assert(itpld_long_size_cast(x0, &x0sz));
+	assert(x0 == x0sz);
+#endif
+	long   x1 = 176;
+	size_t x1sz;
+	assert(itpld_long_size_cast(x1, &x1sz));
+	assert((long)x1 == (long)x1sz);
+}
+
+static void
+itpld_long_size_cast_test_bad(void)
+{
+#if LONG_MAX > SIZE_MAX
+	long   x0 = LONG_MAX;
+	size_t x0sz;
+	assert(!itpld_long_size_cast(x0, &x0sz));
+#endif
+	long   x1 = -1;
+	size_t x1sz;
+	assert(!itpld_long_size_cast(x1, &x1sz));
+}
+
+static void
+itpld_long_size_cast_test_null_guards(void)
+{
+	long x = 0;
+	assert(!itpld_long_size_cast(x, NULL));
+}
+
+void
+itpld_long_size_cast_test(void)
+{
+	itpld_long_size_cast_test_ok();
+	itpld_long_size_cast_test_bad();
+	itpld_long_size_cast_test_null_guards();
 }
 
 static void
