@@ -9,12 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char const DEFAULT_OUTPUT_PATH[]	 = "a.out";
-static char const DEFAULT_ENTRY_SYMBOL[] = "_start";
-
 void
 itpld_cliopts_init(itpld_cli_options_t * opts)
 {
+	static char const DEFAULT_OUTPUT_PATH[]	 = "a.out";
+	static char const DEFAULT_ENTRY_SYMBOL[] = "_start";
+
 	if (opts == NULL) return;
 
 	opts->output_path = DEFAULT_OUTPUT_PATH;
@@ -90,12 +90,12 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	while (curarg < argcnt) {
 		char const * token = argv[curarg];
 		if (token == NULL) {
-			itpld_fill_clierr(err, NULL, "null argument detected");
+			itpld_fill_clierr(err, NULL, "null option detected");
 			stat = ITPLD_STATUS_INVAL_ARG;
 			goto mrproper;
 		}
 		if (token[0] == '\0') {
-			itpld_fill_clierr(err, NULL, "an empty option detected");
+			itpld_fill_clierr(err, NULL, "empty option detected");
 			stat = ITPLD_STATUS_INVAL_ARG;
 			goto mrproper;
 		}
@@ -129,6 +129,11 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 				stat = ITPLD_STATUS_INVAL_ARG;
 				goto mrproper;
 			}
+			if (entrysym[0] == '\0') {
+				itpld_fill_clierr(err, token, "empty entry symbol");
+				stat = ITPLD_STATUS_INVAL_ARG;
+				goto mrproper;
+			}
 			if (entrysym[0] == '-') {
 				itpld_fill_clierr(err, token, "expected entry symbol name, got option");
 				stat = ITPLD_STATUS_INVAL_ARG;
@@ -155,6 +160,11 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 				stat = ITPLD_STATUS_INVAL_ARG;
 				goto mrproper;
 			}
+			if (output_path[0] == '\0') {
+				itpld_fill_clierr(err, token, "empty output file path");
+				stat = ITPLD_STATUS_INVAL_ARG;
+				goto mrproper;
+			}
 			if (output_path[0] == '-') {
 				itpld_fill_clierr(err, token, "expected output file path, got option");
 				stat = ITPLD_STATUS_INVAL_ARG;
@@ -165,7 +175,7 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 			output_seen	    = true;
 		} else {
 			if (token[0] == '-') {
-				itpld_fill_clierr(err, token, "unexpected option");
+				itpld_fill_clierr(err, token, "unknown option");
 				stat = ITPLD_STATUS_INVAL_ARG;
 				goto mrproper;
 			}

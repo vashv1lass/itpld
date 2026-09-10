@@ -43,8 +43,9 @@ itpld_cliopts_destroy(itpld_cli_options_t * opts);
  *  -- option is not supported!
  *
  *  opts must be initialized via itpld_cliopts_init() before calling parse
- *  first -h or -v option terminate parsing and ignore all following argumentws
+ *  first -h or -v option terminate parsing and ignore all following arguments
  *  if parsing fails, nothing will be written to opts
+ *  when there is -h or -v options, the only valid value will be opts->action
  */
 itpld_status_t
 itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cli_error_t * err);

@@ -2,7 +2,8 @@ add_executable(itpld_test
   testconf.c
   common/checked_test.c
   common/diagnostics_test.c
-  common/file_test.c)
+  common/file_test.c
+  cli/options_test.c)
 
 target_include_directories(itpld_test
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src)
@@ -25,7 +26,10 @@ set(ALL_TESTS
   filebuf_destroy
   file_read
   status_str
-  error_report)
+  error_report
+  cliopts_init
+  cliopts_destroy
+  cliopts_parse)
 
 foreach(test IN LISTS ALL_TESTS)
   add_test(NAME "itpld_${test}" COMMAND itpld_test "${test}")

@@ -1,5 +1,6 @@
 #include "testconf.h"
 
+#include "cli/options_test.h"
 #include "common/checked_test.h"
 #include "common/compiler.h"
 #include "common/diagnostics_test.h"
@@ -23,6 +24,9 @@ itpld_test_registry_entry_t const ITPLD_TEST_REGISTRY[] = {
 	{ .name = "file_read",       .func = itpld_file_read_test	    },
 	{ .name = "status_str",	.func = itpld_status_str_test      },
 	{ .name = "error_report",	  .func = itpld_error_report_test	  },
+	{ .name = "cliopts_init",	  .func = itpld_cliopts_init_test	  },
+	{ .name = "cliopts_destroy", .func = itpld_cliopts_destroy_test },
+	{ .name = "cliopts_parse",   .func = itpld_cliopts_parse_test   }
 };
 
 int
