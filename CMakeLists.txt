@@ -39,6 +39,10 @@ add_library(itpld_core STATIC
   src/common/file.c
   src/cli/options.c)
 
+target_compile_definitions(itpld_core PUBLIC
+  ITPLD_VERSION="${PROJECT_VERSION}"
+)
+
 target_include_directories(
   itpld_core
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

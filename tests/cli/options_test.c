@@ -135,7 +135,7 @@ itpld_cliopts_parse_test_ok_default(void)
 
 		assert(strcmp(curin, opts.input_paths[i]) == 0);
 	}
-	assert(err.argument == NULL && err.message == NULL);
+	assert(err.context == NULL && err.message == NULL);
 
 	itpld_cliopts_destroy(&opts);
 	assert(
@@ -167,7 +167,7 @@ itpld_cliopts_parse_test_oe_ok(void)
 
 		assert(strcmp(curin, opts_oe.input_paths[i]) == 0);
 	}
-	assert(err_oe.argument == NULL && err_oe.message == NULL);
+	assert(err_oe.context == NULL && err_oe.message == NULL);
 
 	itpld_cliopts_destroy(&opts_oe);
 	assert(
@@ -198,10 +198,10 @@ itpld_cliopts_parse_test_oe_duplicate(void)
 	itpld_cli_error_t   err_o    = { 0 };
 
 	assert(itpld_cliopts_parse(argc_e, argv_e, &opts_e, &err_e) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_e.argument, "-e") == 0 && strcmp(err_e.message, "duplicate entry option") == 0);
+	assert(strcmp(err_e.context, "-e") == 0 && strcmp(err_e.message, "duplicate entry option") == 0);
 
 	assert(itpld_cliopts_parse(argc_o, argv_o, &opts_o, &err_o) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_o.argument, "-o") == 0 && strcmp(err_o.message, "duplicate output option") == 0);
+	assert(strcmp(err_o.context, "-o") == 0 && strcmp(err_o.message, "duplicate output option") == 0);
 
 	itpld_cliopts_destroy(&opts_e);
 	assert(
@@ -238,10 +238,10 @@ itpld_cliopts_parse_test_oe_missing(void)
 	itpld_cli_error_t   err_o    = { 0 };
 
 	assert(itpld_cliopts_parse(argc_e, argv_e, &opts_e, &err_e) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_e.argument, "-e") == 0 && strcmp(err_e.message, "expected entry symbol name") == 0);
+	assert(strcmp(err_e.context, "-e") == 0 && strcmp(err_e.message, "expected entry symbol name") == 0);
 
 	assert(itpld_cliopts_parse(argc_o, argv_o, &opts_o, &err_o) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_o.argument, "-o") == 0 && strcmp(err_o.message, "expected output file path") == 0);
+	assert(strcmp(err_o.context, "-o") == 0 && strcmp(err_o.message, "expected output file path") == 0);
 
 	itpld_cliopts_destroy(&opts_e);
 	assert(
@@ -278,10 +278,10 @@ itpld_cliopts_parse_test_oe_null_arg(void)
 	itpld_cli_error_t   err_o    = { 0 };
 
 	assert(itpld_cliopts_parse(argc_e, argv_e, &opts_e, &err_e) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_e.argument, "-e") == 0 && strcmp(err_e.message, "null argument detected") == 0);
+	assert(strcmp(err_e.context, "-e") == 0 && strcmp(err_e.message, "null argument detected") == 0);
 
 	assert(itpld_cliopts_parse(argc_o, argv_o, &opts_o, &err_o) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_o.argument, "-o") == 0 && strcmp(err_o.message, "null argument detected") == 0);
+	assert(strcmp(err_o.context, "-o") == 0 && strcmp(err_o.message, "null argument detected") == 0);
 
 	itpld_cliopts_destroy(&opts_e);
 	assert(
@@ -318,10 +318,10 @@ itpld_cliopts_parse_test_oe_empty_arg(void)
 	itpld_cli_error_t   err_o    = { 0 };
 
 	assert(itpld_cliopts_parse(argc_e, argv_e, &opts_e, &err_e) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_e.argument, "-e") == 0 && strcmp(err_e.message, "empty entry symbol") == 0);
+	assert(strcmp(err_e.context, "-e") == 0 && strcmp(err_e.message, "empty entry symbol") == 0);
 
 	assert(itpld_cliopts_parse(argc_o, argv_o, &opts_o, &err_o) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err_o.argument, "-o") == 0 && strcmp(err_o.message, "empty output file path") == 0);
+	assert(strcmp(err_o.context, "-o") == 0 && strcmp(err_o.message, "empty output file path") == 0);
 
 	itpld_cliopts_destroy(&opts_e);
 	assert(
@@ -359,13 +359,11 @@ itpld_cliopts_parse_test_oe_key(void)
 
 	assert(itpld_cliopts_parse(argc_e, argv_e, &opts_e, &err_e) == ITPLD_STATUS_INVAL_ARG);
 	assert(
-	    strcmp(err_e.argument, "-e") == 0 && strcmp(err_e.message, "expected entry symbol name, got option") == 0
+	    strcmp(err_e.context, "-e") == 0 && strcmp(err_e.message, "expected entry symbol name, got option") == 0
 	);
 
 	assert(itpld_cliopts_parse(argc_o, argv_o, &opts_o, &err_o) == ITPLD_STATUS_INVAL_ARG);
-	assert(
-	    strcmp(err_o.argument, "-o") == 0 && strcmp(err_o.message, "expected output file path, got option") == 0
-	);
+	assert(strcmp(err_o.context, "-o") == 0 && strcmp(err_o.message, "expected output file path, got option") == 0);
 
 	itpld_cliopts_destroy(&opts_e);
 	assert(
@@ -393,7 +391,7 @@ itpld_cliopts_parse_test_null_opt(void)
 	itpld_cli_error_t   err	   = { 0 };
 
 	assert(itpld_cliopts_parse(argc, argv, &opts, &err) == ITPLD_STATUS_INVAL_ARG);
-	assert(err.argument == NULL && strcmp(err.message, "null option detected") == 0);
+	assert(strcmp(err.context, "cli") == 0 && strcmp(err.message, "null option detected") == 0);
 
 	itpld_cliopts_destroy(&opts);
 	assert(
@@ -415,7 +413,7 @@ itpld_cliopts_parse_test_empty_opt(void)
 	itpld_cli_error_t   err	   = { 0 };
 
 	assert(itpld_cliopts_parse(argc, argv, &opts, &err) == ITPLD_STATUS_INVAL_ARG);
-	assert(err.argument == NULL && strcmp(err.message, "empty option detected") == 0);
+	assert(strcmp(err.context, "cli") == 0 && strcmp(err.message, "empty option detected") == 0);
 
 	itpld_cliopts_destroy(&opts);
 	assert(
@@ -437,7 +435,7 @@ itpld_cliopts_parse_test_unknown_opt(void)
 	itpld_cli_error_t   err	   = { 0 };
 
 	assert(itpld_cliopts_parse(argc, argv, &opts, &err) == ITPLD_STATUS_INVAL_ARG);
-	assert(strcmp(err.argument, "-x") == 0 && strcmp(err.message, "unknown option") == 0);
+	assert(strcmp(err.context, "-x") == 0 && strcmp(err.message, "unknown option") == 0);
 
 	itpld_cliopts_destroy(&opts);
 	assert(
@@ -469,11 +467,11 @@ itpld_cliopts_parse_test_hv(void)
 
 	assert(itpld_cliopts_parse(argc_h, argv_h, &opts_h, &err_h) == ITPLD_STATUS_OK);
 	assert(opts_h.action == ITPLD_CLI_ACTION_HELP);
-	assert(err_h.argument == NULL && err_h.message == NULL);
+	assert(err_h.context == NULL && err_h.message == NULL);
 
 	assert(itpld_cliopts_parse(argc_v, argv_v, &opts_v, &err_v) == ITPLD_STATUS_OK);
 	assert(opts_v.action == ITPLD_CLI_ACTION_VERSION);
-	assert(err_v.argument == NULL && err_v.message == NULL);
+	assert(err_v.context == NULL && err_v.message == NULL);
 
 	itpld_cliopts_destroy(&opts_h);
 	assert(
@@ -501,7 +499,10 @@ itpld_cliopts_parse_test_no_input(void)
 	itpld_cli_error_t   err	   = { 0 };
 
 	assert(itpld_cliopts_parse(argc, argv, &opts, &err) == ITPLD_STATUS_INVAL_ARG);
-	assert(err.argument == NULL && strcmp(err.message, "expected input file paths, got no input file paths") == 0);
+	assert(
+	    strcmp(err.context, "cli") == 0 &&
+	    strcmp(err.message, "expected input file paths, got no input file paths") == 0
+	);
 
 	itpld_cliopts_destroy(&opts);
 	assert(
@@ -528,7 +529,7 @@ itpld_cliopts_parse_test_preserves(void)
 	itpld_cli_error_t err	 = { 0 };
 
 	assert(itpld_cliopts_parse(argc, argv, &opts, &err) == ITPLD_STATUS_INVAL_ARG);
-	assert(err.argument == NULL && strcmp(err.message, "null option detected") == 0);
+	assert(strcmp(err.context, "cli") == 0 && strcmp(err.message, "null option detected") == 0);
 
 	assert(
 	    strcmp(opts.output_path, "exec") == 0 && strcmp(opts.entry_symbol, "constr") == 0 &&
@@ -601,4 +602,6 @@ itpld_cliopts_parse_test(void)
 	itpld_cliopts_parse_test_no_input();
 	itpld_cliopts_parse_test_preserves();
 	itpld_cliopts_parse_test_replaces();
+
+	// TODO: add null guards test
 }

@@ -23,9 +23,12 @@ typedef struct itpld_cli_options {
 } itpld_cli_options_t;
 
 typedef struct itpld_cli_error {
-	char const * argument;
+	char const * context;
 	char const * message;
 } itpld_cli_error_t;
+
+extern char const ITPLD_HELP_MESSAGE[];
+extern char const ITPLD_VERSION_MESSAGE[];
 
 void
 itpld_cliopts_init(itpld_cli_options_t * opts);

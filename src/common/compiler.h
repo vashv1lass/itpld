@@ -3,5 +3,6 @@
 
 #define ITPLD_PARAM_UNUSED(param)  ((void)(param))
 #define ITPLD_RETVAL_IGNORED(call) ((void)(call))
+#define ITPLD_DEAD_CODE()	   ((void)0)
 
 #endif /* ITPLD_COMMON_COMPILER_H_ */

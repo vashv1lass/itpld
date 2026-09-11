@@ -9,6 +9,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+char const ITPLD_HELP_MESSAGE[]	   = "itpld linker\n"
+				     "Usage: itpld [options] file...\n"
+				     "Options:\n"
+				     "\t-h\tprint this message (only short option available)\n"
+				     "\t-v\tprint the version (only short version available)\n"
+				     "\t-o\tpath to the output executable file\n"
+				     "\t-e\tentry symbol name\n"
+				     "\t[no key specified]\tpath to the input ELF .o file";
+char const ITPLD_VERSION_MESSAGE[] = "itpld version " ITPLD_VERSION;
+
 void
 itpld_cliopts_init(itpld_cli_options_t * opts)
 {
@@ -44,11 +54,11 @@ itpld_cliopts_destroy(itpld_cli_options_t * opts)
 }
 
 static void
-itpld_fill_clierr(itpld_cli_error_t * clierr, char const * arg, char const * msg)
+itpld_fill_clierr(itpld_cli_error_t * clierr, char const * ctx, char const * msg)
 {
 	if (clierr != NULL) {
-		clierr->argument = arg;
-		clierr->message	 = msg;
+		clierr->context = ctx;
+		clierr->message = msg;
 	}
 }
 
@@ -58,23 +68,23 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	itpld_fill_clierr(err, NULL, NULL);
 
 	if (opts == NULL) {
-		itpld_fill_clierr(err, NULL, "'opts' argument is null");
+		itpld_fill_clierr(err, "cli", "'opts' argument is null");
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 
 	if (argc < 1) {
-		itpld_fill_clierr(err, NULL, "too few arguments");
+		itpld_fill_clierr(err, "cli", "too few arguments");
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 
 	if (argv == NULL) {
-		itpld_fill_clierr(err, NULL, "'argv' argument is null");
+		itpld_fill_clierr(err, "cli", "'argv' argument is null");
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 
 	size_t argcnt;
 	if (!itpld_int_size_cast(argc, &argcnt)) {
-		itpld_fill_clierr(err, NULL, "'int -> size_t' cast error");
+		itpld_fill_clierr(err, "cli logic", "'int -> size_t' cast error");
 		return ITPLD_STATUS_OVERFLOW;
 	}
 
@@ -90,12 +100,12 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	while (curarg < argcnt) {
 		char const * token = argv[curarg];
 		if (token == NULL) {
-			itpld_fill_clierr(err, NULL, "null option detected");
+			itpld_fill_clierr(err, "cli", "null option detected");
 			stat = ITPLD_STATUS_INVAL_ARG;
 			goto mrproper;
 		}
 		if (token[0] == '\0') {
-			itpld_fill_clierr(err, NULL, "empty option detected");
+			itpld_fill_clierr(err, "cli", "empty option detected");
 			stat = ITPLD_STATUS_INVAL_ARG;
 			goto mrproper;
 		}
@@ -214,7 +224,7 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	}
 
 	if (cliopts.action == ITPLD_CLI_ACTION_LINK && cliopts.input_paths_size == 0) {
-		itpld_fill_clierr(err, NULL, "expected input file paths, got no input file paths");
+		itpld_fill_clierr(err, "cli", "expected input file paths, got no input file paths");
 		stat = ITPLD_STATUS_INVAL_ARG;
 		goto mrproper;
 	}
