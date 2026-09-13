@@ -6,3 +6,6 @@ compile_commands.json
 build-debug/
 build-release/
 
+# Specifications & standards
+gen-elf64-abi.pdf
+amd64-elf-abi-processor-supplement.pdf
