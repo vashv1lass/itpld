@@ -74,7 +74,7 @@ itpld_file_read(char const * restrict path, itpld_file_buffer_t * restrict outbu
 			goto mrproper;
 		}
 
-		if (fread(buf.data, sizeof(itpld_uchar), buf.size, fd) != buf.size) {
+		if (fread(buf.data, sizeof(itpld_uchar_t), buf.size, fd) != buf.size) {
 			stat = ITPLD_STATUS_IO_ERROR;
 			goto mrproper;
 		}

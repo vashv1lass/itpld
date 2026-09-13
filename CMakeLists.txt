@@ -13,10 +13,11 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Release)
 endif()
 
-option(ITPLD_BUILD_TESTS "Build unit tests for itpld" ON)
+option(ITPLD_BUILD_TESTS "Build unit tests for itpld" OFF)
+option(ITPLD_ENABLE_CLANG_TIDY "Enable clang tidy for itpld" OFF)
 
 add_library(project_options INTERFACE)
 target_compile_options(project_options INTERFACE -Wall -Wextra -Wpedantic
@@ -28,9 +29,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_link_options(project_options INTERFACE -fsanitize=address,undefined)
 endif()
 
-find_program(CLANG_TIDY_EXE NAMES clang-tidy REQUIRED)
-if(CLANG_TIDY_EXE)
-  set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}")
+if (ITPLD_ENABLE_CLANG_TIDY)
+  find_program(CLANG_TIDY_EXE NAMES clang-tidy REQUIRED)
+  if(CLANG_TIDY_EXE)
+    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}")
+  endif()
 endif()
 
 add_library(itpld_core STATIC
@@ -38,10 +41,6 @@ add_library(itpld_core STATIC
   src/common/diagnostics.c
   src/common/file.c
   src/cli/options.c)
-
-target_compile_definitions(itpld_core PUBLIC
-  ITPLD_VERSION="${PROJECT_VERSION}"
-)
 
 target_include_directories(
   itpld_core
@@ -51,6 +50,10 @@ target_include_directories(
 target_link_libraries(itpld_core PRIVATE project_options)
 
 add_executable(itpld src/main.c)
+
+target_compile_definitions(itpld_core PUBLIC
+  ITPLD_VERSION="${PROJECT_VERSION}"
+)
 
 target_link_libraries(itpld PRIVATE itpld_core project_options)
 

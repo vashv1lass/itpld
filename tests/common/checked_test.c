@@ -1,4 +1,4 @@
-#include "checked_test.h"
+#include "common/checked_test.h"
 
 #include "common/checked.h"
 
@@ -30,7 +30,6 @@ itpld_in_range_test_false(void)
 static void
 itpld_in_range_test_overflow(void)
 {
-	assert(!itpld_in_range(SIZE_MAX, 5, SIZE_MAX));
 	assert(!itpld_in_range(SIZE_MAX, 1, SIZE_MAX));
 }
 

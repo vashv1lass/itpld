@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 typedef struct itpld_file_buffer {
-	itpld_uchar * data;
-	size_t	      size;
+	itpld_uchar_t * data;
+	size_t		size;
 } itpld_file_buffer_t;
 
 /* initializes the buffer, must not be called on a live buffer */
@@ -25,6 +25,7 @@ itpld_filebuf_destroy(itpld_file_buffer_t * buf);
 /*
  * safely replaces outbuf contents to those read from file on successful read and preserves its contents on failure.
  * buffer must-be initialized (itpld_filebuf_init() or zero-initialized) before the first call
+ * the file size is limited with the constant of LONG_MAX
  */
 itpld_status_t
 itpld_file_read(char const * restrict path, itpld_file_buffer_t * restrict outbuf);

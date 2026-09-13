@@ -19,8 +19,8 @@ itpld_status_str(itpld_status_t stat)
 		return "I/O error";
 	case ITPLD_STATUS_INVAL_FMT:
 		return "invalid format";
-	case ITPLD_STATUS_RELOC_TYPE_UNSUPPORTED:
-		return "unsupported relocation type";
+	case ITPLD_STATUS_UNSUPPORTED:
+		return "unsupported functionality";
 	case ITPLD_STATUS_OVERFLOW:
 		return "overflow error";
 	default:

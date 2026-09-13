@@ -1,4 +1,4 @@
-#include "diagnostics_test.h"
+#include "common/diagnostics_test.h"
 
 #include "common/compiler.h"
 #include "common/diagnostics.h"
@@ -16,7 +16,7 @@ itpld_status_str_test(void)
 	assert(strcmp(itpld_status_str(ITPLD_STATUS_OUT_OF_MEM), "out of memory") == 0);
 	assert(strcmp(itpld_status_str(ITPLD_STATUS_IO_ERROR), "I/O error") == 0);
 	assert(strcmp(itpld_status_str(ITPLD_STATUS_INVAL_FMT), "invalid format") == 0);
-	assert(strcmp(itpld_status_str(ITPLD_STATUS_RELOC_TYPE_UNSUPPORTED), "unsupported relocation type") == 0);
+	assert(strcmp(itpld_status_str(ITPLD_STATUS_UNSUPPORTED), "unsupported functionality") == 0);
 	assert(strcmp(itpld_status_str(ITPLD_STATUS_OVERFLOW), "overflow error") == 0);
 	/* NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange) */
 	assert(strcmp(itpld_status_str((itpld_status_t)-1), "unknown error") == 0);

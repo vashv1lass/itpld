@@ -11,6 +11,12 @@ typedef enum itpld_cli_action {
 	ITPLD_CLI_ACTION_HELP
 } itpld_cli_action_t;
 
+/*
+ * output_path - borrowed (argv)
+ * input_paths - owned
+ * input_paths[i] - borrowed (argv)
+ * entry_symbol - borrowed (argv)
+ */
 typedef struct itpld_cli_options {
 	char const * output_path;
 
@@ -22,6 +28,10 @@ typedef struct itpld_cli_options {
 	itpld_cli_action_t action;
 } itpld_cli_options_t;
 
+/*
+ * context - borrowed
+ * message - borrowed
+ */
 typedef struct itpld_cli_error {
 	char const * context;
 	char const * message;
