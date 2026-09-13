@@ -1,5 +1,6 @@
 #include "testconf.h"
 
+#include "cli/options_test.h"
 #include "common/checked_test.h"
 #include "common/compiler.h"
 #include "common/diagnostics_test.h"
@@ -11,17 +12,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-// sync the test registry with the test list in tests/CMakeLists.txt
+/* clang-format off */
+/* sync the test registry with the test list in tests/CMakeLists.txt */
 itpld_test_registry_entry_t const ITPLD_TEST_REGISTRY[] = {
-	{ .name = "in_range",	      .func = itpld_in_range_test	  },
-	{ .name = "size_add",	      .func = itpld_size_add_test	  },
-	{ .name = "size_mul",	      .func = itpld_size_mul_test	  },
-	{ .name = "filebuf_init",	  .func = itpld_filebuf_init_test	  },
+	{ .name = "in_range",	     .func = itpld_in_range_test        },
+	{ .name = "int_size_cast",   .func = itpld_int_size_cast_test   },
+	{ .name = "long_size_cast",  .func = itpld_long_size_cast_test  },
+	{ .name = "size_add",	     .func = itpld_size_add_test        },
+	{ .name = "size_mul",	     .func = itpld_size_mul_test        },
+	{ .name = "filebuf_init",    .func = itpld_filebuf_init_test    },
 	{ .name = "filebuf_destroy", .func = itpld_filebuf_destroy_test },
-	{ .name = "file_read",       .func = itpld_file_read_test	    },
-	{ .name = "status_str",	.func = itpld_status_str_test      },
-	{ .name = "error_report",	  .func = itpld_error_report_test	  },
+	{ .name = "file_read",       .func = itpld_file_read_test       },
+	{ .name = "status_str",	     .func = itpld_status_str_test      },
+	{ .name = "error_report",    .func = itpld_error_report_test    },
+	{ .name = "cliopts_init",    .func = itpld_cliopts_init_test    },
+	{ .name = "cliopts_destroy", .func = itpld_cliopts_destroy_test },
+	{ .name = "cliopts_parse",   .func = itpld_cliopts_parse_test   }
 };
+/* clang-format on */
 
 int
 main(int argc, char ** argv)
