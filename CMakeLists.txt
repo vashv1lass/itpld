@@ -40,7 +40,9 @@ add_library(itpld_core STATIC
   src/itpld.c
   src/common/diagnostics.c
   src/common/file.c
-  src/cli/options.c)
+  src/cli/options.c
+  src/elf/elf_bytes.c
+  src/elf/elf_decode.c)
 
 target_include_directories(
   itpld_core
