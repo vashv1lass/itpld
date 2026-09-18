@@ -1,9 +1,12 @@
 #include "elf/elf_decode.h"
 
+#include "common/checked.h"
 #include "common/status.h"
 #include "elf/elf_bytes.h"
 #include "elf/elf_constants.h"
 #include "elf/elf_types.h"
+
+#include <stddef.h>
 
 static itpld_status_t
 itpld_elf_decode_ehdr_ei_magic_(itpld_elf_bytes_t bytes, itpld_elf64_ehdr_t * out)
@@ -369,7 +372,8 @@ itpld_status_t
 itpld_elf_decode_ehdr(itpld_elf_bytes_t bytes, itpld_elf64_ehdr_t * out)
 {
 	if (out == NULL) return ITPLD_STATUS_INVAL_ARG;
-	if (bytes.data == NULL || bytes.bytescnt < ITPLD_ELF64_EHDR_SIZE) return ITPLD_STATUS_INVAL_FMT;
+	if (bytes.data == NULL || !itpld_in_range(0, ITPLD_ELF64_EHDR_SIZE, bytes.bytescnt))
+		return ITPLD_STATUS_INVAL_FMT;
 
 	itpld_status_t stat = ITPLD_STATUS_OK;
 
@@ -415,6 +419,233 @@ itpld_elf_decode_ehdr(itpld_elf_bytes_t bytes, itpld_elf64_ehdr_t * out)
 	if (stat != ITPLD_STATUS_OK) return stat;
 
 	stat = itpld_elf_decode_ehdr_eshstrndx_(bytes, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	*out = decoded;
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shname_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	itpld_elf_ufourbyte_t shname_val;
+	stat = itpld_elf_read_ufourbyte(bytes, shoff, &shname_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_name = shname_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_sht_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 4, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ufourbyte_t shtype_val;
+	stat = itpld_elf_read_ufourbyte(bytes, off, &shtype_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	switch (shtype_val) {
+	case ITPLD_SHT_NULL:
+	case ITPLD_SHT_PROGBITS:
+	case ITPLD_SHT_SYMTAB:
+	case ITPLD_SHT_STRTAB:
+	case ITPLD_SHT_RELA:
+	case ITPLD_SHT_NOBITS:
+		out->sh_type = shtype_val;
+		return ITPLD_STATUS_OK;
+	default:
+		return ITPLD_STATUS_INVAL_FMT;
+	}
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shf_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 8, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t supported_flags = ITPLD_SHF_WRITE | ITPLD_SHF_ALLOC | ITPLD_SHF_EXECINSTR;
+
+	itpld_elf_ueightbyte_t shflags_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shflags_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	if ((shflags_val & ~supported_flags) != 0) return ITPLD_STATUS_INVAL_FMT;
+
+	out->sh_flags = shflags_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shaddr_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 16, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t shaddr_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shaddr_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_addr = shaddr_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shoffset_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 24, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t shoffset_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shoffset_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_offset = shoffset_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shsize_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 32, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t shsize_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shsize_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_size = shsize_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shlink_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 40, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ufourbyte_t shlink_val;
+	stat = itpld_elf_read_ufourbyte(bytes, off, &shlink_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_link = shlink_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shinfo_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 44, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ufourbyte_t shinfo_val;
+	stat = itpld_elf_read_ufourbyte(bytes, off, &shinfo_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_info = shinfo_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shaddralign_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 48, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t shaddralign_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shaddralign_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	if ((shaddralign_val & (shaddralign_val - 1)) != 0 && shaddralign_val != 0) return ITPLD_STATUS_INVAL_FMT;
+
+	out->sh_addralign = shaddralign_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+static itpld_status_t
+itpld_elf_decode_shdr_shentsize_(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	size_t off;
+	if (!itpld_size_add(shoff, 56, &off)) return ITPLD_STATUS_OVERFLOW;
+
+	itpld_elf_ueightbyte_t shentsize_val;
+	stat = itpld_elf_read_ueightbyte(bytes, off, &shentsize_val);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	out->sh_entsize = shentsize_val;
+
+	return ITPLD_STATUS_OK;
+}
+
+itpld_status_t
+itpld_elf_decode_shdr(itpld_elf_bytes_t bytes, size_t shoff, itpld_elf64_shdr_t * out)
+{
+	if (out == NULL) return ITPLD_STATUS_INVAL_ARG;
+	if (bytes.data == NULL || !itpld_in_range(shoff, ITPLD_ELF64_SHDR_SIZE, bytes.bytescnt))
+		return ITPLD_STATUS_INVAL_FMT;
+
+	itpld_status_t stat = ITPLD_STATUS_OK;
+
+	itpld_elf64_shdr_t decoded = { 0 };
+
+	stat = itpld_elf_decode_shdr_shname_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_sht_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shf_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shaddr_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shoffset_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shsize_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shlink_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shinfo_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shaddralign_(bytes, shoff, &decoded);
+	if (stat != ITPLD_STATUS_OK) return stat;
+
+	stat = itpld_elf_decode_shdr_shentsize_(bytes, shoff, &decoded);
 	if (stat != ITPLD_STATUS_OK) return stat;
 
 	*out = decoded;
