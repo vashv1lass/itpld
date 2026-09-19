@@ -6,49 +6,20 @@
 
 #include <string.h>
 
-static itpld_status_t
-itpld_elf_read_bytes_(itpld_elf_bytes_t bytes, size_t offset, size_t outsz, void * out)
-{
-	if (out == NULL) return ITPLD_STATUS_INVAL_ARG;
-	if (!itpld_in_range(offset, outsz, bytes.bytescnt) || bytes.data == NULL) return ITPLD_STATUS_INVAL_FMT;
+#define ITPLD_DEFINE_ELF_READ_GENERIC(type)                                                                            \
+	itpld_status_t itpld_elf_read_##type(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_##type##_t * out)       \
+	{                                                                                                              \
+		if (out == NULL || bytes.data == NULL) return ITPLD_STATUS_INVAL_ARG;                                  \
+		if (!itpld_in_range(offset, sizeof(*out), bytes.bytescnt)) return ITPLD_STATUS_INVAL_FMT;              \
+		memcpy(out, bytes.data + offset, sizeof(*out));                                                        \
+		return ITPLD_STATUS_OK;                                                                                \
+	}
 
-	memcpy(out, bytes.data + offset, outsz);
+ITPLD_DEFINE_ELF_READ_GENERIC(ubyte)
+ITPLD_DEFINE_ELF_READ_GENERIC(utwobyte)
+ITPLD_DEFINE_ELF_READ_GENERIC(fourbyte)
+ITPLD_DEFINE_ELF_READ_GENERIC(ufourbyte)
+ITPLD_DEFINE_ELF_READ_GENERIC(eightbyte)
+ITPLD_DEFINE_ELF_READ_GENERIC(ueightbyte)
 
-	return ITPLD_STATUS_OK;
-}
-
-itpld_status_t
-itpld_elf_read_ubyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_ubyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
-
-itpld_status_t
-itpld_elf_read_utwobyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_utwobyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
-
-itpld_status_t
-itpld_elf_read_fourbyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_fourbyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
-
-itpld_status_t
-itpld_elf_read_ufourbyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_ufourbyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
-
-itpld_status_t
-itpld_elf_read_eightbyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_eightbyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
-
-itpld_status_t
-itpld_elf_read_ueightbyte(itpld_elf_bytes_t bytes, size_t offset, itpld_elf_ueightbyte_t * out)
-{
-	return itpld_elf_read_bytes_(bytes, offset, sizeof(*out), out);
-}
+#undef ITPLD_DEFINE_ELF_READ_GENERIC

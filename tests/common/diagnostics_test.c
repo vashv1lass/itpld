@@ -23,7 +23,7 @@ itpld_status_str_test(void)
 }
 
 static void
-itpld_error_report_test_ok(void)
+itpld_error_report_test_ok_(void)
 {
 	FILE * fd = tmpfile();
 	assert(fd != NULL);
@@ -44,7 +44,7 @@ itpld_error_report_test_ok(void)
 }
 
 static void
-itpld_error_report_test_null_guards(void)
+itpld_error_report_test_null_guards_(void)
 {
 	itpld_error_report(
 	    NULL, ITPLD_STATUS_INVAL_ARG, "itpld_error_report_test_null_guards()", "file descriptor is null"
@@ -68,6 +68,6 @@ itpld_error_report_test_null_guards(void)
 void
 itpld_error_report_test(void)
 {
-	itpld_error_report_test_ok();
-	itpld_error_report_test_null_guards();
+	itpld_error_report_test_ok_();
+	itpld_error_report_test_null_guards_();
 }

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 static void
-itpld_in_range_test_true(void)
+itpld_in_range_test_true_(void)
 {
 	assert(itpld_in_range(0, 0, 0));
 	assert(itpld_in_range(0, 1, 1));
@@ -18,7 +18,7 @@ itpld_in_range_test_true(void)
 }
 
 static void
-itpld_in_range_test_false(void)
+itpld_in_range_test_false_(void)
 {
 	assert(!itpld_in_range(5, 2, 3));
 	assert(!itpld_in_range(1, 1, 1));
@@ -28,7 +28,7 @@ itpld_in_range_test_false(void)
 }
 
 static void
-itpld_in_range_test_overflow(void)
+itpld_in_range_test_overflow_(void)
 {
 	assert(!itpld_in_range(SIZE_MAX, 1, SIZE_MAX));
 }
@@ -36,13 +36,13 @@ itpld_in_range_test_overflow(void)
 void
 itpld_in_range_test(void)
 {
-	itpld_in_range_test_true();
-	itpld_in_range_test_false();
-	itpld_in_range_test_overflow();
+	itpld_in_range_test_true_();
+	itpld_in_range_test_false_();
+	itpld_in_range_test_overflow_();
 }
 
 static void
-itpld_int_size_cast_test_ok(void)
+itpld_int_size_cast_test_ok_(void)
 {
 #if INT_MAX > SIZE_MAX
 	int    x0 = SIZE_MAX + 1;
@@ -57,7 +57,7 @@ itpld_int_size_cast_test_ok(void)
 }
 
 static void
-itpld_int_size_cast_test_bad(void)
+itpld_int_size_cast_test_bad_(void)
 {
 #if INT_MAX > SIZE_MAX
 	int    x0 = INT_MAX;
@@ -70,7 +70,7 @@ itpld_int_size_cast_test_bad(void)
 }
 
 static void
-itpld_int_size_cast_test_null_guards(void)
+itpld_int_size_cast_test_null_guards_(void)
 {
 	int x = 0;
 	assert(!itpld_int_size_cast(x, NULL));
@@ -79,13 +79,13 @@ itpld_int_size_cast_test_null_guards(void)
 void
 itpld_int_size_cast_test(void)
 {
-	itpld_int_size_cast_test_ok();
-	itpld_int_size_cast_test_bad();
-	itpld_int_size_cast_test_null_guards();
+	itpld_int_size_cast_test_ok_();
+	itpld_int_size_cast_test_bad_();
+	itpld_int_size_cast_test_null_guards_();
 }
 
 static void
-itpld_long_size_cast_test_ok(void)
+itpld_long_size_cast_test_ok_(void)
 {
 #if LONG_MAX > SIZE_MAX
 	long   x0 = SIZE_MAX + 1;
@@ -100,7 +100,7 @@ itpld_long_size_cast_test_ok(void)
 }
 
 static void
-itpld_long_size_cast_test_bad(void)
+itpld_long_size_cast_test_bad_(void)
 {
 #if LONG_MAX > SIZE_MAX
 	long   x0 = LONG_MAX;
@@ -113,7 +113,7 @@ itpld_long_size_cast_test_bad(void)
 }
 
 static void
-itpld_long_size_cast_test_null_guards(void)
+itpld_long_size_cast_test_null_guards_(void)
 {
 	long x = 0;
 	assert(!itpld_long_size_cast(x, NULL));
@@ -122,13 +122,13 @@ itpld_long_size_cast_test_null_guards(void)
 void
 itpld_long_size_cast_test(void)
 {
-	itpld_long_size_cast_test_ok();
-	itpld_long_size_cast_test_bad();
-	itpld_long_size_cast_test_null_guards();
+	itpld_long_size_cast_test_ok_();
+	itpld_long_size_cast_test_bad_();
+	itpld_long_size_cast_test_null_guards_();
 }
 
 static void
-itpld_size_add_test_ok(void)
+itpld_size_add_test_ok_(void)
 {
 	size_t sum;
 
@@ -137,7 +137,7 @@ itpld_size_add_test_ok(void)
 }
 
 static void
-itpld_size_add_test_overflow(void)
+itpld_size_add_test_overflow_(void)
 {
 	size_t sum = 176;
 
@@ -146,7 +146,7 @@ itpld_size_add_test_overflow(void)
 }
 
 static void
-itpld_size_add_test_null_guards(void)
+itpld_size_add_test_null_guards_(void)
 {
 	assert(!itpld_size_add(0, 0, NULL));
 }
@@ -154,13 +154,13 @@ itpld_size_add_test_null_guards(void)
 void
 itpld_size_add_test(void)
 {
-	itpld_size_add_test_ok();
-	itpld_size_add_test_overflow();
-	itpld_size_add_test_null_guards();
+	itpld_size_add_test_ok_();
+	itpld_size_add_test_overflow_();
+	itpld_size_add_test_null_guards_();
 }
 
 static void
-itpld_size_mul_test_ok(void)
+itpld_size_mul_test_ok_(void)
 {
 	size_t prod;
 
@@ -170,7 +170,7 @@ itpld_size_mul_test_ok(void)
 }
 
 static void
-itpld_size_mul_test_overflow(void)
+itpld_size_mul_test_overflow_(void)
 {
 	size_t prod = 176;
 
@@ -179,7 +179,7 @@ itpld_size_mul_test_overflow(void)
 }
 
 static void
-itpld_size_mul_test_null_guards(void)
+itpld_size_mul_test_null_guards_(void)
 {
 	assert(!itpld_size_mul(1, 1, NULL));
 }
@@ -187,7 +187,7 @@ itpld_size_mul_test_null_guards(void)
 void
 itpld_size_mul_test(void)
 {
-	itpld_size_mul_test_ok();
-	itpld_size_mul_test_overflow();
-	itpld_size_mul_test_null_guards();
+	itpld_size_mul_test_ok_();
+	itpld_size_mul_test_overflow_();
+	itpld_size_mul_test_null_guards_();
 }

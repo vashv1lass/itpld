@@ -55,7 +55,7 @@ itpld_cliopts_destroy(itpld_cli_options_t * opts)
 }
 
 static void
-itpld_fill_clierr(itpld_cli_error_t * clierr, char const * ctx, char const * msg)
+itpld_fill_clierr_(itpld_cli_error_t * clierr, char const * ctx, char const * msg)
 {
 	if (clierr != NULL) {
 		clierr->context = ctx;
@@ -64,26 +64,26 @@ itpld_fill_clierr(itpld_cli_error_t * clierr, char const * ctx, char const * msg
 }
 
 static itpld_status_t
-itpld_cliopts_validate_parse_args(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cli_error_t * err)
+itpld_cliopts_validate_parse_args_(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cli_error_t * err)
 {
 	itpld_status_t stat = ITPLD_STATUS_OK;
 
 	if (opts == NULL) {
-		itpld_fill_clierr(err, "cli", "'opts' argument is null");
+		itpld_fill_clierr_(err, "cli", "'opts' argument is null");
 		stat = ITPLD_STATUS_INVAL_ARG;
 	}
 
 	if (argc < 1) {
-		itpld_fill_clierr(err, "cli", "too few arguments");
+		itpld_fill_clierr_(err, "cli", "too few arguments");
 		stat = ITPLD_STATUS_INVAL_ARG;
 	}
 
 	if (argv == NULL) {
-		itpld_fill_clierr(err, "cli", "'argv' argument is null");
+		itpld_fill_clierr_(err, "cli", "'argv' argument is null");
 		stat = ITPLD_STATUS_INVAL_ARG;
 	} else {
 		if (argv[0] == NULL) {
-			itpld_fill_clierr(err, "cli", "'argv[0]' argument is null");
+			itpld_fill_clierr_(err, "cli", "'argv[0]' argument is null");
 			stat = ITPLD_STATUS_INVAL_ARG;
 		}
 	}
@@ -92,21 +92,25 @@ itpld_cliopts_validate_parse_args(int argc, char ** argv, itpld_cli_options_t * 
 }
 
 static itpld_status_t
-itpld_cliopts_append_input(itpld_cli_options_t * opts, char const * token, itpld_cli_error_t * err)
+itpld_cliopts_append_input_(itpld_cli_options_t * opts, char const * token, itpld_cli_error_t * err)
 {
 	size_t newsz;
 	if (!itpld_size_add(opts->input_paths_size, 1, &newsz)) {
-		itpld_fill_clierr(err, token, "failed to increase the size of internal buffer for new input file path");
+		itpld_fill_clierr_(
+		    err, token, "failed to increase the size of internal buffer for new input file path"
+		);
 		return ITPLD_STATUS_OVERFLOW;
 	}
 	size_t newsz_bytes;
 	if (!itpld_size_mul(newsz, sizeof(*opts->input_paths), &newsz_bytes)) {
-		itpld_fill_clierr(err, token, "failed to increase the size of internal buffer for new input file path");
+		itpld_fill_clierr_(
+		    err, token, "failed to increase the size of internal buffer for new input file path"
+		);
 		return ITPLD_STATUS_OVERFLOW;
 	}
 	char const ** new_input_paths = (char const **)realloc((void *)opts->input_paths, newsz_bytes);
 	if (new_input_paths == NULL) {
-		itpld_fill_clierr(err, token, "failed to allocate memory for new input file path");
+		itpld_fill_clierr_(err, token, "failed to allocate memory for new input file path");
 		return ITPLD_STATUS_OUT_OF_MEM;
 	}
 
@@ -121,7 +125,7 @@ itpld_cliopts_append_input(itpld_cli_options_t * opts, char const * token, itpld
 typedef enum itpld_cli_value_option { ITPLD_CLI_VALOPT_ENTRYSYM, ITPLD_CLI_VALOPT_OUTPUT } itpld_cli_value_option_t;
 
 static itpld_status_t
-itpld_cliopts_parse_value_option(
+itpld_cliopts_parse_value_option_(
     size_t *		     idx,
     size_t		     argc,
     char **		     argv,
@@ -136,10 +140,10 @@ itpld_cliopts_parse_value_option(
 	if (*idx + 1 >= argc) {
 		switch (valopt) {
 		case ITPLD_CLI_VALOPT_ENTRYSYM:
-			itpld_fill_clierr(err, token, "expected entry symbol name");
+			itpld_fill_clierr_(err, token, "expected entry symbol name");
 			break;
 		case ITPLD_CLI_VALOPT_OUTPUT:
-			itpld_fill_clierr(err, token, "expected output file path");
+			itpld_fill_clierr_(err, token, "expected output file path");
 			break;
 		default:
 			itpld_dead_code();
@@ -151,10 +155,10 @@ itpld_cliopts_parse_value_option(
 	if (*seen) {
 		switch (valopt) {
 		case ITPLD_CLI_VALOPT_ENTRYSYM:
-			itpld_fill_clierr(err, token, "duplicate entry option");
+			itpld_fill_clierr_(err, token, "duplicate entry option");
 			break;
 		case ITPLD_CLI_VALOPT_OUTPUT:
-			itpld_fill_clierr(err, token, "duplicate output option");
+			itpld_fill_clierr_(err, token, "duplicate output option");
 			break;
 		default:
 			itpld_dead_code();
@@ -166,16 +170,16 @@ itpld_cliopts_parse_value_option(
 	char const * arg = argv[++(*idx)];
 
 	if (arg == NULL) {
-		itpld_fill_clierr(err, token, "null argument detected");
+		itpld_fill_clierr_(err, token, "null argument detected");
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 	if (arg[0] == '\0') {
 		switch (valopt) {
 		case ITPLD_CLI_VALOPT_ENTRYSYM:
-			itpld_fill_clierr(err, token, "empty entry symbol");
+			itpld_fill_clierr_(err, token, "empty entry symbol");
 			break;
 		case ITPLD_CLI_VALOPT_OUTPUT:
-			itpld_fill_clierr(err, token, "empty output file path");
+			itpld_fill_clierr_(err, token, "empty output file path");
 			break;
 		default:
 			itpld_dead_code();
@@ -186,10 +190,10 @@ itpld_cliopts_parse_value_option(
 	if (arg[0] == '-') {
 		switch (valopt) {
 		case ITPLD_CLI_VALOPT_ENTRYSYM:
-			itpld_fill_clierr(err, token, "expected entry symbol name, got option");
+			itpld_fill_clierr_(err, token, "expected entry symbol name, got option");
 			break;
 		case ITPLD_CLI_VALOPT_OUTPUT:
-			itpld_fill_clierr(err, token, "expected output file path, got option");
+			itpld_fill_clierr_(err, token, "expected output file path, got option");
 			break;
 		default:
 			itpld_dead_code();
@@ -216,7 +220,7 @@ itpld_cliopts_parse_value_option(
 typedef enum itpld_cli_token_result { ITPLD_CLI_TOKEN_CONTINUE, ITPLD_CLI_TOKEN_STOP } itpld_cli_token_result_t;
 
 static itpld_status_t
-itpld_cliopts_parse_token(
+itpld_cliopts_parse_token_(
     size_t *		       idx,
     size_t		       argc,
     char **		       argv,
@@ -230,13 +234,13 @@ itpld_cliopts_parse_token(
 	char const * token = argv[*idx];
 
 	if (token == NULL) {
-		itpld_fill_clierr(err, "cli", "null option detected");
+		itpld_fill_clierr_(err, "cli", "null option detected");
 		*res = ITPLD_CLI_TOKEN_STOP;
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 
 	if (token[0] == '\0') {
-		itpld_fill_clierr(err, "cli", "empty option detected");
+		itpld_fill_clierr_(err, "cli", "empty option detected");
 		*res = ITPLD_CLI_TOKEN_STOP;
 		return ITPLD_STATUS_INVAL_ARG;
 	}
@@ -256,40 +260,41 @@ itpld_cliopts_parse_token(
 	itpld_status_t stat = ITPLD_STATUS_OK;
 
 	if (strcmp(token, "-e") == 0) {
-		stat =
-		    itpld_cliopts_parse_value_option(idx, argc, argv, opts, ITPLD_CLI_VALOPT_ENTRYSYM, entry_seen, err);
+		stat = itpld_cliopts_parse_value_option_(
+		    idx, argc, argv, opts, ITPLD_CLI_VALOPT_ENTRYSYM, entry_seen, err
+		);
 		*res = stat == ITPLD_STATUS_OK ? ITPLD_CLI_TOKEN_CONTINUE : ITPLD_CLI_TOKEN_STOP;
 		return stat;
 	}
 
 	if (strcmp(token, "-o") == 0) {
 		stat =
-		    itpld_cliopts_parse_value_option(idx, argc, argv, opts, ITPLD_CLI_VALOPT_OUTPUT, output_seen, err);
+		    itpld_cliopts_parse_value_option_(idx, argc, argv, opts, ITPLD_CLI_VALOPT_OUTPUT, output_seen, err);
 		*res = stat == ITPLD_STATUS_OK ? ITPLD_CLI_TOKEN_CONTINUE : ITPLD_CLI_TOKEN_STOP;
 		return stat;
 	}
 
 	if (token[0] == '-') {
-		itpld_fill_clierr(err, token, "unknown option");
+		itpld_fill_clierr_(err, token, "unknown option");
 		*res = ITPLD_CLI_TOKEN_STOP;
 		return ITPLD_STATUS_INVAL_ARG;
 	}
 
 	*res = ITPLD_CLI_TOKEN_CONTINUE;
-	return itpld_cliopts_append_input(opts, token, err);
+	return itpld_cliopts_append_input_(opts, token, err);
 }
 
 itpld_status_t
 itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cli_error_t * err)
 {
-	itpld_fill_clierr(err, NULL, NULL);
+	itpld_fill_clierr_(err, NULL, NULL);
 
-	itpld_status_t stat = itpld_cliopts_validate_parse_args(argc, argv, opts, err);
+	itpld_status_t stat = itpld_cliopts_validate_parse_args_(argc, argv, opts, err);
 	if (stat != ITPLD_STATUS_OK) return stat;
 
 	size_t argcnt;
 	if (!itpld_int_size_cast(argc, &argcnt)) {
-		itpld_fill_clierr(err, "cli", "'int -> size_t' cast error");
+		itpld_fill_clierr_(err, "cli", "'int -> size_t' cast error");
 		return ITPLD_STATUS_OVERFLOW;
 	}
 
@@ -302,7 +307,7 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	size_t curarg = 1;
 	while (curarg < argcnt) {
 		itpld_cli_token_result_t tokenres;
-		stat = itpld_cliopts_parse_token(
+		stat = itpld_cliopts_parse_token_(
 		    &curarg, argcnt, argv, &output_seen, &entry_seen, &parsed, &tokenres, err
 		);
 		if (tokenres == ITPLD_CLI_TOKEN_STOP) goto mrproper;
@@ -311,7 +316,7 @@ itpld_cliopts_parse(int argc, char ** argv, itpld_cli_options_t * opts, itpld_cl
 	}
 
 	if (parsed.action == ITPLD_CLI_ACTION_LINK && parsed.input_paths_size == 0) {
-		itpld_fill_clierr(err, "cli", "expected input file paths, got no input file paths");
+		itpld_fill_clierr_(err, "cli", "expected input file paths, got no input file paths");
 		stat = ITPLD_STATUS_INVAL_ARG;
 		goto mrproper;
 	}

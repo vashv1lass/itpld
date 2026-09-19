@@ -4,8 +4,6 @@
 #include "common/types.h"
 #include "elf/elf_constants.h"
 
-#include <stdint.h>
-
 /* source: system v abi amd64 arch processor supplement (2025), figure 3.1 */
 /* NOTE: type names are not same as specified! */
 typedef itpld_u8_t  itpld_elf_ubyte_t;
@@ -71,6 +69,8 @@ typedef struct itpld_elf64_sym {
 	itpld_elf64_addr_t  st_value; /* Symbol value */
 	itpld_elf64_xword_t st_size;  /* Size of object (e.g., common) */
 } itpld_elf64_sym_t;
+
+#define ITPLD_ELF64_SYM_SIZE sizeof(itpld_elf64_sym_t)
 
 #define ITPLD_ELF64_ST_BIND(i)	  ((i) >> 4)
 #define ITPLD_ELF64_ST_TYPE(i)	  ((i) & 0x0F)
