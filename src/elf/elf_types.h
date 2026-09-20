@@ -72,6 +72,10 @@ typedef struct itpld_elf64_sym {
 
 #define ITPLD_ELF64_SYM_SIZE sizeof(itpld_elf64_sym_t)
 
+/* source: generic system v abi specification draft (2013), Symbol Table */
+#define ITPLD_ELF64_ST_VISIBILITY(o) ((o) & 0x3)
+
+/* source: generic system v abi specification draft (2013), Symbol Table */
 #define ITPLD_ELF64_ST_BIND(i)	  ((i) >> 4)
 #define ITPLD_ELF64_ST_TYPE(i)	  ((i) & 0x0F)
 #define ITPLD_ELF64_ST_INFO(b, t) (((b) << 4) + ((t) & 0x0F))
@@ -82,6 +86,8 @@ typedef struct itpld_elf64_rela {
 	itpld_elf64_xword_t  r_info;
 	itpld_elf64_sxword_t r_addend;
 } itpld_elf64_rela_t;
+
+#define ITPLD_ELF64_RELA_SIZE sizeof(itpld_elf64_rela_t)
 
 /* source: generic system v abi specification version 1.5 draft 2 (1998), section 7 */
 #define ITPLD_ELF64_R_SYM(i)	 ((i) >> 32)

@@ -51,11 +51,16 @@
 #define ITPLD_SHT_STRTAB   3
 #define ITPLD_SHT_RELA	   4
 #define ITPLD_SHT_NOBITS   8
+#define ITPLD_SHT_GROUP	   17
 
-/* source: generic system v abi specification version 1.5 draft 2 (1998), table 9 */
+/* source: generic system v abi specificatio draft (2013), figure 4-11 */
 #define ITPLD_SHF_WRITE	    0x1
 #define ITPLD_SHF_ALLOC	    0x2
 #define ITPLD_SHF_EXECINSTR 0x4
+#define ITPLD_SHF_MERGE	    0x10
+#define ITPLD_SHF_STRINGS   0x20
+#define ITPLD_SHF_INFO_LINK 0x40
+#define ITPLD_SHF_GROUP	    0x200
 
 /* source: generic system v abi specification version 1.5 draft 2 (1998), table 14 */
 #define ITPLD_STB_LOCAL	 0
@@ -68,6 +73,10 @@
 #define ITPLD_STT_FUNC	  2
 #define ITPLD_STT_SECTION 3
 #define ITPLD_STT_FILE	  4
+
+/* source: generic system v abi specification draft (2013), figure 4-21 */
+#define ITPLD_STV_DEFAULT 0
+#define ITPLD_STV_HIDDEN  2
 
 /* source: generic system v abi specification version 1.5 draft 2 (1998), table 16 */
 #define ITPLD_PT_NULL 0
