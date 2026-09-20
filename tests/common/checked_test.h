@@ -4,6 +4,8 @@
 void
 itpld_in_range_test(void);
 
+/* define generic macro? */
+
 void
 itpld_int_size_cast_test(void);
 

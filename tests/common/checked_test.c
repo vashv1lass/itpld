@@ -41,6 +41,8 @@ itpld_in_range_test(void)
 	itpld_in_range_test_overflow_();
 }
 
+/* define generic macro? */
+
 static void
 itpld_int_size_cast_test_ok_(void)
 {

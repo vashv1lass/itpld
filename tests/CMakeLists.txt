@@ -5,6 +5,7 @@ add_executable(
   common/diagnostics_test.c
   common/file_test.c
   cli/options_test.c
+  elf/elf_bytes_test.c
   test_helpers/helpers.c)
 
 target_include_directories(itpld_test
@@ -33,7 +34,13 @@ set(ALL_TESTS
     error_report
     cliopts_init
     cliopts_destroy
-    cliopts_parse)
+    cliopts_parse
+    elf_read_ubyte
+    elf_read_utwobyte
+    elf_read_fourbyte
+    elf_read_ufourbyte
+    elf_read_eightbyte
+    elf_read_ueightbyte)
 
 foreach(test IN LISTS ALL_TESTS)
   add_test(NAME "itpld_${test}" COMMAND itpld_test "${test}")
